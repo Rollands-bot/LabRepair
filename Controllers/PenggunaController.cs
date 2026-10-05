@@ -42,16 +42,18 @@ public class PenggunaController(AppDbContext db) : Controller
         }
         var p = await db.Pengguna.FindAsync(id);
         if (p == null) return NotFound();
-        try
-        {
-            db.Pengguna.Remove(p);
-            await db.SaveChangesAsync();
-            TempData["Pesan"] = $"Pengguna {p.Username} dihapus.";
-        }
-        catch (DbUpdateException)
+
+        var punyaRiwayat = await db.LaporanKerusakan.AnyAsync(l => l.PelaporId == id || l.TeknisiId == id)
+                           || await db.Perbaikan.AnyAsync(x => x.TeknisiId == id);
+        if (punyaRiwayat)
         {
             TempData["Error"] = $"{p.Username} sudah punya riwayat laporan/perbaikan, tidak bisa dihapus.";
+            return RedirectToAction(nameof(Index));
         }
+
+        db.Pengguna.Remove(p);
+        await db.SaveChangesAsync();
+        TempData["Pesan"] = $"Pengguna {p.Username} dihapus.";
         return RedirectToAction(nameof(Index));
     }
 }

@@ -29,7 +29,7 @@ public class LabController(AppDbContext db) : Controller
 
         if (lab.Id == 0) db.Lab.Add(lab); else db.Lab.Update(lab);
         await db.SaveChangesAsync();
-        TempData["Pesan"] = $"Lab {lab.Nama} berhasil disimpan.";
+        TempData["Pesan"] = $"{lab.Nama} berhasil disimpan.";
         return RedirectToAction(nameof(Index));
     }
 
@@ -39,12 +39,12 @@ public class LabController(AppDbContext db) : Controller
         var lab = await db.Lab.Include(l => l.Komputer).FirstOrDefaultAsync(l => l.Id == id);
         if (lab == null) return NotFound();
         if (lab.Komputer.Count > 0)
-            TempData["Error"] = $"Lab {lab.Nama} masih punya {lab.Komputer.Count} komputer, pindahkan/hapus dulu.";
+            TempData["Error"] = $"{lab.Nama} masih punya {lab.Komputer.Count} komputer, pindahkan/hapus dulu.";
         else
         {
             db.Lab.Remove(lab);
             await db.SaveChangesAsync();
-            TempData["Pesan"] = $"Lab {lab.Nama} dihapus.";
+            TempData["Pesan"] = $"{lab.Nama} dihapus.";
         }
         return RedirectToAction(nameof(Index));
     }

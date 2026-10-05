@@ -7,7 +7,9 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<AppDbContext>(opt =>
-    opt.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
+    opt.UseSqlServer(builder.Configuration.GetConnectionString("Default"),
+        // Pecah query yang memuat banyak koleksi (laporan + perbaikan) agar hasilnya tidak berlipat
+        sql => sql.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)));
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(opt =>
@@ -23,12 +25,12 @@ builder.Services.AddAuthorization(opt =>
 
 builder.Services.AddControllersWithViews();
 
-// Saat diakses lewat tunnel/reverse proxy (HTTPS di depan), pakai skema & host asli dari proxy
+// Saat diakses lewat tunnel/reverse proxy (HTTPS di depan), pakai skema & host asli dari proxy.
+// Hanya dipercaya dari loopback (default KnownProxies), karena cloudflared berjalan di mesin yang sama.
 builder.Services.Configure<ForwardedHeadersOptions>(opt =>
 {
-    opt.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost;
-    opt.KnownIPNetworks.Clear();
-    opt.KnownProxies.Clear();
+    opt.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    opt.ForwardLimit = 1;
 });
 
 var app = builder.Build();

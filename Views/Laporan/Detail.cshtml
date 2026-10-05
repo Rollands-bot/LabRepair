@@ -55,7 +55,13 @@
     <div class="col-md-7">
         <div class="card p-3">
             <h5>Riwayat penanganan</h5>
-            @if (!Model.Perbaikan.Any()) { <p class="text-muted mb-0">Belum ada tindakan. Teknisi mencatat penanganan pertama lewat form <em>Catat perbaikan</em>.</p> }
+            @if (!Model.Perbaikan.Any())
+            {
+                <p class="text-muted mb-0">
+                    @if (bisaProses) { <text>Belum ada tindakan. Catat penanganan pertama lewat form di samping.</text> }
+                    else { <text>Belum ada tindakan. Laporan ini sudah masuk antrean teknisi dan akan diperbarui di sini.</text> }
+                </p>
+            }
             <div class="timeline">
             @foreach (var p in Model.Perbaikan.OrderBy(p => p.Tanggal))
             {

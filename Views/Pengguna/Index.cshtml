@@ -2,7 +2,7 @@
 @{ ViewData["Title"] = "Pengguna"; }
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h3 class="mb-0">Pengguna</h3>
-    <a asp-action="Create" class="btn btn-primary">+ Tambah Pengguna</a>
+    <a asp-action="Create" class="btn btn-primary">Tambah pengguna</a>
 </div>
 <div class="card">
     <table class="table mb-0">
@@ -11,7 +11,7 @@
         @foreach (var p in Model)
         {
             <tr>
-                <td>@p.Username</td><td>@p.NamaLengkap</td><td><span class="badge bg-secondary">@p.Peran</span></td>
+                <td>@p.Username</td><td>@p.NamaLengkap</td><td>@p.Peran</td>
                 <td class="text-end">
                     <form asp-action="Hapus" asp-route-id="@p.Id" method="post" class="d-inline" onsubmit="return confirm('Hapus @p.Username?')">
                         <button class="btn btn-sm btn-outline-danger">Hapus</button>

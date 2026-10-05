@@ -41,25 +41,26 @@ public static class EnumExtensions
         value.GetType().GetMember(value.ToString()).First()
             .GetCustomAttribute<DisplayAttribute>()?.Name ?? value.ToString();
 
+    // Class CSS di wwwroot/css/site.css (lihat DESIGN.md)
     public static string Badge(this StatusLaporan s) => s switch
     {
-        StatusLaporan.Dilaporkan => "bg-warning text-dark",
-        StatusLaporan.Diproses => "bg-info text-dark",
-        StatusLaporan.Selesai => "bg-success",
-        _ => "bg-secondary"
+        StatusLaporan.Dilaporkan => "status status-dilaporkan",
+        StatusLaporan.Diproses => "status status-diproses",
+        StatusLaporan.Selesai => "status status-selesai",
+        _ => "status status-tidak"
     };
 
     public static string Badge(this KondisiKomputer k) => k switch
     {
-        KondisiKomputer.Baik => "bg-success",
-        KondisiKomputer.Rusak => "bg-danger",
-        _ => "bg-info text-dark"
+        KondisiKomputer.Baik => "status status-baik",
+        KondisiKomputer.Rusak => "status status-rusak",
+        _ => "status status-diproses"
     };
 
     public static string Badge(this Prioritas p) => p switch
     {
-        Prioritas.Tinggi => "bg-danger",
-        Prioritas.Sedang => "bg-warning text-dark",
-        _ => "bg-light text-dark border"
+        Prioritas.Tinggi => "prioritas-tinggi",
+        Prioritas.Sedang => "prioritas-sedang",
+        _ => "prioritas-rendah"
     };
 }

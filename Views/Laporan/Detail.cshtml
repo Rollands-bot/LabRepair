@@ -5,7 +5,7 @@
     var bisaProses = User.PeranPengguna() != Peran.Pelapor && pilihan.Count > 0;
 }
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <h3 class="mb-0">Laporan #@Model.Id <span class="badge @Model.Status.Badge() fs-6 align-middle">@Model.Status.Tampil()</span></h3>
+    <h3 class="mb-0">Laporan #@Model.Id <span class="@Model.Status.Badge()">@Model.Status.Tampil()</span></h3>
     <a asp-action="Index" class="btn btn-link">&larr; Kembali</a>
 </div>
 <div class="row g-3">
@@ -15,7 +15,7 @@
                 <dt>Komputer</dt>
                 <dd><a asp-controller="Komputer" asp-action="Riwayat" asp-route-id="@Model.KomputerId">@Model.Komputer!.KodePc</a> — @Model.Komputer!.Lab!.Nama</dd>
                 <dt>Kerusakan</dt><dd>@Model.Deskripsi</dd>
-                <dt>Prioritas</dt><dd><span class="badge @Model.Prioritas.Badge()">@Model.Prioritas</span></dd>
+                <dt>Prioritas</dt><dd><span class="@Model.Prioritas.Badge()">@Model.Prioritas</span></dd>
                 <dt>Pelapor</dt><dd>@Model.Pelapor!.NamaLengkap · @Model.TanggalLapor.ToString("dd/MM/yyyy HH:mm")</dd>
                 <dt>Teknisi</dt><dd>@(Model.Teknisi?.NamaLengkap ?? "Belum ditangani")</dd>
                 @if (Model.TanggalSelesai.HasValue)
@@ -27,7 +27,7 @@
         @if (bisaProses)
         {
             <div class="card p-3">
-                <h5>Catat Perbaikan</h5>
+                <h5>Catat perbaikan</h5>
                 <form asp-action="Proses" method="post">
                     <input type="hidden" name="LaporanId" value="@Model.Id" />
                     <div class="mb-2">
@@ -54,14 +54,14 @@
     </div>
     <div class="col-md-7">
         <div class="card p-3">
-            <h5>Riwayat Penanganan</h5>
-            @if (!Model.Perbaikan.Any()) { <p class="text-muted mb-0">Belum ada tindakan perbaikan.</p> }
+            <h5>Riwayat penanganan</h5>
+            @if (!Model.Perbaikan.Any()) { <p class="text-muted mb-0">Belum ada tindakan. Teknisi mencatat penanganan pertama lewat form <em>Catat perbaikan</em>.</p> }
             <div class="timeline">
             @foreach (var p in Model.Perbaikan.OrderBy(p => p.Tanggal))
             {
                 <div class="item">
                     <div class="small text-muted">@p.Tanggal.ToString("dd/MM/yyyy HH:mm") · @p.Teknisi!.NamaLengkap
-                        <span class="badge @p.StatusSetelah.Badge()">@p.StatusSetelah.Tampil()</span></div>
+                        <span class="@p.StatusSetelah.Badge()">@p.StatusSetelah.Tampil()</span></div>
                     <div>@p.Tindakan</div>
                     @if (!string.IsNullOrEmpty(p.Sparepart) || p.Biaya > 0)
                     {

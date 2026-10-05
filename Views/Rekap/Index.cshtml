@@ -5,7 +5,7 @@
 }
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h3 class="mb-0">Rekap Perbaikan — @namaBulan.GetMonthName(Model.Bulan) @Model.Tahun</h3>
-    <button onclick="window.print()" class="btn btn-outline-primary no-print">🖨️ Cetak</button>
+    <button onclick="window.print()" class="btn btn-outline-primary no-print">Cetak rekap</button>
 </div>
 <form method="get" class="row g-2 mb-3 no-print">
     <div class="col-auto">
@@ -33,7 +33,7 @@
                 <td>Total</td><td class="text-end">@Model.PerLab.Sum(r => r.Total)</td><td class="text-end">@Model.PerLab.Sum(r => r.Dilaporkan)</td><td class="text-end">@Model.PerLab.Sum(r => r.Diproses)</td><td class="text-end">@Model.PerLab.Sum(r => r.Selesai)</td><td class="text-end">@Model.PerLab.Sum(r => r.TidakBisa)</td><td class="text-end">Rp @Model.PerLab.Sum(r => r.Biaya).ToString("N0")</td>
             </tr>
         }
-        else { <tr><td colspan="7" class="text-center text-muted">Tidak ada laporan pada periode ini.</td></tr> }
+        else { <tr><td colspan="7" class="text-muted">Tidak ada laporan kerusakan yang masuk pada periode ini. Coba pilih bulan atau lab lain.</td></tr> }
         </tbody>
     </table>
 </div>

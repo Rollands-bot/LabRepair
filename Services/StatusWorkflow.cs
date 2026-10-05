@@ -14,8 +14,17 @@ public static class StatusWorkflow
     /// </summary>
     public static IReadOnlyList<StatusLaporan> StatusBerikutnya(StatusLaporan sekarang, Peran peran)
     {
-        // TODO(lo yang isi): tentukan alur statusnya di sini.
-        throw new NotImplementedException("StatusWorkflow.StatusBerikutnya belum diisi");
+        if (peran == Peran.Pelapor) return [];
+
+        return sekarang switch
+        {
+            // Kerusakan ringan (mis. kabel longgar) boleh langsung ditutup tanpa lewat Diproses
+            StatusLaporan.Dilaporkan => [StatusLaporan.Diproses, StatusLaporan.Selesai, StatusLaporan.TidakBisaDiperbaiki],
+            // Diproses -> Diproses untuk mencatat progres (mis. menunggu sparepart)
+            StatusLaporan.Diproses => [StatusLaporan.Diproses, StatusLaporan.Selesai, StatusLaporan.TidakBisaDiperbaiki],
+            // Laporan yang sudah final hanya bisa dibuka ulang oleh Admin
+            _ => peran == Peran.Admin ? [StatusLaporan.Diproses] : []
+        };
     }
 
     public static bool BolehUbah(StatusLaporan dari, StatusLaporan ke, Peran peran) =>

@@ -50,7 +50,8 @@ public class DashboardVm
     public int KomputerRusak { get; set; }
     public int LaporanTerbuka { get; set; }
     public int SelesaiBulanIni { get; set; }
-    public List<LaporanKerusakan> LaporanTerbaru { get; set; } = new();
+    // Laporan yang belum selesai, prioritas tertinggi & paling lama menunggu di atas
+    public List<LaporanKerusakan> Antrean { get; set; } = new();
     public List<(Komputer Pc, int Jumlah)> SeringRusak { get; set; } = new();
 }
 

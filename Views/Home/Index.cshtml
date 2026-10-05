@@ -1,48 +1,65 @@
 @model DashboardVm
-@{ ViewData["Title"] = "Dashboard"; }
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h3 class="mb-0">Dashboard</h3>
-    <a asp-controller="Laporan" asp-action="Create" class="btn btn-danger">+ Laporkan Kerusakan</a>
+@{
+    ViewData["Title"] = "Antrean";
+    var pelapor = User.PeranPengguna() == Peran.Pelapor;
+    string Menunggu(DateTime t)
+    {
+        var hari = (int)(DateTime.Now - t).TotalDays;
+        return hari switch { 0 => "dilaporkan hari ini", 1 => "menunggu 1 hari", _ => $"menunggu {hari} hari" };
+    }
+}
+<div class="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-2">
+    <h3 class="mb-0">@(pelapor ? "Laporan saya yang belum selesai" : "Antrean perbaikan")</h3>
+    <a asp-controller="Laporan" asp-action="Create" class="btn btn-primary">Laporkan kerusakan</a>
 </div>
-<div class="row g-3 mb-4">
-    <div class="col-6 col-md-3"><div class="card stat p-3"><div class="angka">@Model.TotalKomputer</div><div class="label">Total komputer</div></div></div>
-    <div class="col-6 col-md-3"><div class="card stat p-3"><div class="angka text-danger">@Model.KomputerRusak</div><div class="label">Rusak / dalam perbaikan</div></div></div>
-    <div class="col-6 col-md-3"><div class="card stat p-3"><div class="angka text-warning">@Model.LaporanTerbuka</div><div class="label">Laporan belum selesai</div></div></div>
-    <div class="col-6 col-md-3"><div class="card stat p-3"><div class="angka text-success">@Model.SelesaiBulanIni</div><div class="label">Selesai bulan ini</div></div></div>
-</div>
-<div class="row g-3">
+<p class="ringkasan">
+    <strong>@Model.LaporanTerbuka</strong> laporan belum selesai ·
+    <strong>@Model.KomputerRusak</strong> dari @Model.TotalKomputer komputer sedang bermasalah ·
+    <strong>@Model.SelesaiBulanIni</strong> diselesaikan bulan ini
+</p>
+
+<div class="row g-4">
     <div class="col-lg-8">
         <div class="card">
-            <div class="card-header bg-white fw-semibold">Laporan terbaru</div>
-            <table class="table mb-0">
-                <thead><tr><th>Tanggal</th><th>Komputer</th><th>Kerusakan</th><th>Status</th></tr></thead>
-                <tbody>
-                @foreach (var l in Model.LaporanTerbaru)
-                {
-                    <tr>
-                        <td class="small">@l.TanggalLapor.ToString("dd/MM/yyyy")</td>
-                        <td>@l.Komputer!.KodePc<div class="small text-muted">@l.Komputer.Lab!.Nama</div></td>
-                        <td><a asp-controller="Laporan" asp-action="Detail" asp-route-id="@l.Id">@l.Deskripsi</a></td>
-                        <td><span class="badge @l.Status.Badge()">@l.Status.Tampil()</span></td>
-                    </tr>
-                }
-                @if (!Model.LaporanTerbaru.Any()) { <tr><td colspan="4" class="text-muted text-center">Belum ada laporan.</td></tr> }
-                </tbody>
-            </table>
+            @foreach (var l in Model.Antrean)
+            {
+                <a class="antrean-item @(l.Prioritas == Prioritas.Tinggi ? "tinggi" : "")" asp-controller="Laporan" asp-action="Detail" asp-route-id="@l.Id">
+                    <span class="judul">@l.Komputer!.KodePc — @l.Deskripsi</span>
+                    <span class="@l.Status.Badge()">@l.Status.Tampil()</span>
+                    <span class="meta">
+                        @l.Komputer.Lab!.Nama · <span class="@l.Prioritas.Badge()">Prioritas @l.Prioritas.ToString().ToLower()</span> · @Menunggu(l.TanggalLapor)
+                        @if (l.Teknisi != null) { <text> · ditangani @l.Teknisi.NamaLengkap</text> }
+                    </span>
+                </a>
+            }
+            @if (!Model.Antrean.Any())
+            {
+                <div class="kosong">
+                    <strong>Tidak ada laporan yang menunggu.</strong>
+                    Semua kerusakan yang dilaporkan sudah ditangani. Jika menemukan PC bermasalah, kirim lewat tombol <em>Laporkan kerusakan</em>.
+                </div>
+            }
         </div>
     </div>
     <div class="col-lg-4">
-        <div class="card">
-            <div class="card-header bg-white fw-semibold">Paling sering rusak</div>
-            <ul class="list-group list-group-flush">
-            @foreach (var (pc, jumlah) in Model.SeringRusak)
-            {
-                <li class="list-group-item d-flex justify-content-between">
-                    <a asp-controller="Komputer" asp-action="Riwayat" asp-route-id="@pc.Id">@pc.KodePc</a>
-                    <span class="badge bg-secondary">@jumlah laporan</span>
-                </li>
-            }
-            </ul>
-        </div>
+        <h5 class="mb-1">PC yang paling sering dilaporkan</h5>
+        <p class="small text-muted mb-2">Kandidat untuk dicek menyeluruh atau diganti.</p>
+        @if (Model.SeringRusak.Any())
+        {
+            <table class="table table-sm">
+                @foreach (var (pc, jumlah) in Model.SeringRusak)
+                {
+                    <tr>
+                        <td><a asp-controller="Komputer" asp-action="Riwayat" asp-route-id="@pc.Id">@pc.KodePc</a></td>
+                        <td class="text-muted small">@pc.Lab!.Nama</td>
+                        <td class="text-end">@jumlah×</td>
+                    </tr>
+                }
+            </table>
+        }
+        else
+        {
+            <p class="small text-muted">Belum ada riwayat laporan.</p>
+        }
     </div>
 </div>

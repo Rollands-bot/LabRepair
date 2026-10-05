@@ -5,7 +5,7 @@
 }
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h3 class="mb-0">Data Komputer</h3>
-    @if (admin) { <a asp-action="Create" asp-route-labId="@ViewBag.LabId" class="btn btn-primary">+ Tambah Komputer</a> }
+    @if (admin) { <a asp-action="Create" asp-route-labId="@ViewBag.LabId" class="btn btn-primary">Tambah komputer</a> }
 </div>
 <form method="get" class="row g-2 mb-3">
     <div class="col-auto">
@@ -28,10 +28,10 @@
                 <td class="fw-semibold">@k.KodePc</td>
                 <td>@k.Lab!.Nama</td>
                 <td class="small text-muted">@k.Processor · @k.Ram · @k.Penyimpanan · @k.Os</td>
-                <td><span class="badge @k.Kondisi.Badge()">@k.Kondisi.Tampil()</span></td>
+                <td><span class="@k.Kondisi.Badge()">@k.Kondisi.Tampil()</span></td>
                 <td class="text-end text-nowrap">
                     <a asp-action="Riwayat" asp-route-id="@k.Id" class="btn btn-sm btn-outline-primary">Riwayat</a>
-                    <a asp-controller="Laporan" asp-action="Create" asp-route-komputerId="@k.Id" class="btn btn-sm btn-outline-danger">Lapor</a>
+                    <a asp-controller="Laporan" asp-action="Create" asp-route-komputerId="@k.Id" class="btn btn-sm btn-outline-secondary">Lapor</a>
                     @if (admin)
                     {
                         <a asp-action="Edit" asp-route-id="@k.Id" class="btn btn-sm btn-outline-secondary">Ubah</a>
@@ -42,7 +42,7 @@
                 </td>
             </tr>
         }
-        @if (!Model.Any()) { <tr><td colspan="5" class="text-center text-muted">Tidak ada data.</td></tr> }
+        @if (!Model.Any()) { <tr><td colspan="5" class="text-muted">Tidak ada komputer yang cocok dengan filter ini. Ubah filter lab/kondisi untuk melihat komputer lain.</td></tr> }
         </tbody>
     </table>
 </div>

@@ -1,23 +1,43 @@
 @model LoginVm
+@inject IConfiguration Config
 @{ ViewData["Title"] = "Masuk"; }
 <div class="login-wrap">
-    <div class="card p-4" style="width: 100%; max-width: 380px;">
-        <h4 class="mb-1">🛠️ LabRepair</h4>
-        <p class="text-muted small mb-4">Sistem Informasi Perbaikan Komputer Laboratorium</p>
-        <form asp-action="Login" method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger small mb-2"></div>
-            <input type="hidden" asp-for="ReturnUrl" />
-            <div class="mb-3">
-                <label asp-for="Username" class="form-label"></label>
-                <input asp-for="Username" class="form-control" autofocus />
-                <span asp-validation-for="Username" class="text-danger small"></span>
+    <div class="login-info">
+        <div class="fw-bold">LabRepair</div>
+        <div>
+            <h1>Pencatatan kerusakan dan perbaikan komputer laboratorium</h1>
+            <p class="mt-3 mb-0">Asisten lab melaporkan PC yang bermasalah, teknisi mencatat setiap tindakan perbaikan,
+                dan kepala lab memantau riwayat serta rekap bulanannya.</p>
+        </div>
+        <div class="small" style="opacity: .7">Tugas Tutorial Program ASP · 2026/2027</div>
+    </div>
+    <div class="login-form">
+        <div>
+            <h3 class="mb-4">Masuk</h3>
+            <form asp-action="Login" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger small mb-2"></div>
+                <input type="hidden" asp-for="ReturnUrl" />
+                <div class="mb-3">
+                    <label asp-for="Username" class="form-label"></label>
+                    <input asp-for="Username" class="form-control" autocomplete="username" autofocus />
+                    <span asp-validation-for="Username" class="text-danger small"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Password" class="form-label"></label>
+                    <input asp-for="Password" class="form-control" autocomplete="current-password" />
+                    <span asp-validation-for="Password" class="text-danger small"></span>
+                </div>
+                <button class="btn btn-primary w-100">Masuk</button>
+            </form>
+            <div class="akun-demo mt-4">
+                <div class="fw-semibold mb-1">Akun demo</div>
+                <table class="w-100">
+                    <tr><td>Kepala Lab</td><td><code>admin</code></td></tr>
+                    <tr><td>Teknisi</td><td><code>teknisi</code></td></tr>
+                    <tr><td>Asisten Lab</td><td><code>asisten</code></td></tr>
+                </table>
+                <div class="mt-2">Password semua akun: <code>@Config["Seed:PasswordAwal"]</code></div>
             </div>
-            <div class="mb-3">
-                <label asp-for="Password" class="form-label"></label>
-                <input asp-for="Password" class="form-control" />
-                <span asp-validation-for="Password" class="text-danger small"></span>
-            </div>
-            <button class="btn btn-primary w-100">Masuk</button>
-        </form>
+        </div>
     </div>
 </div>

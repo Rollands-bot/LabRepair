@@ -2,6 +2,7 @@ using System.Diagnostics;
 using LabRepair.Data;
 using LabRepair.Models;
 using LabRepair.Models.ViewModels;
+using LabRepair.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -28,12 +29,26 @@ public class HomeController(AppDbContext db) : Controller
                 l.Status == StatusLaporan.Dilaporkan || l.Status == StatusLaporan.Diproses),
             SelesaiBulanIni = await db.LaporanKerusakan.CountAsync(l =>
                 l.Status == StatusLaporan.Selesai && l.TanggalSelesai >= awalBulan),
-            LaporanTerbaru = await db.LaporanKerusakan
-                .Include(l => l.Komputer!).ThenInclude(k => k.Lab)
-                .OrderByDescending(l => l.TanggalLapor).Take(5).ToListAsync(),
+            Antrean = await AmbilAntrean(),
             SeringRusak = sering.Select(s => (pcs.First(p => p.Id == s.KomputerId), s.Jumlah)).ToList()
         };
         return View(vm);
+    }
+
+    private async Task<List<LaporanKerusakan>> AmbilAntrean()
+    {
+        var q = db.LaporanKerusakan
+            .Include(l => l.Komputer!).ThenInclude(k => k.Lab)
+            .Include(l => l.Teknisi)
+            .Where(l => l.Status == StatusLaporan.Dilaporkan || l.Status == StatusLaporan.Diproses);
+        if (User.PeranPengguna() == Peran.Pelapor)
+            q = q.Where(l => l.PelaporId == User.IdPengguna());
+
+        // Prioritas disimpan sebagai teks di DB, jadi urutkan di memori berdasarkan nilai enum
+        return (await q.ToListAsync())
+            .OrderByDescending(l => l.Prioritas)
+            .ThenBy(l => l.TanggalLapor)
+            .ToList();
     }
 
     [AllowAnonymous, ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

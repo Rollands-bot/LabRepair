@@ -1,6 +1,7 @@
 using LabRepair.Data;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,12 +23,22 @@ builder.Services.AddAuthorization(opt =>
 
 builder.Services.AddControllersWithViews();
 
+// Saat diakses lewat tunnel/reverse proxy (HTTPS di depan), pakai skema & host asli dari proxy
+builder.Services.Configure<ForwardedHeadersOptions>(opt =>
+{
+    opt.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost;
+    opt.KnownIPNetworks.Clear();
+    opt.KnownProxies.Clear();
+});
+
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
 {
     DbSeeder.Seed(scope.ServiceProvider.GetRequiredService<AppDbContext>(), app.Configuration);
 }
+
+app.UseForwardedHeaders();
 
 if (!app.Environment.IsDevelopment())
 {

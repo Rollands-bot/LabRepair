@@ -4,8 +4,8 @@
     var laporan = Model.Laporan.OrderByDescending(l => l.TanggalLapor).ToList();
 }
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <h3 class="mb-0">@Model.KodePc <span class="badge @Model.Kondisi.Badge() fs-6 align-middle">@Model.Kondisi.Tampil()</span></h3>
-    <a asp-controller="Laporan" asp-action="Create" asp-route-komputerId="@Model.Id" class="btn btn-danger">+ Laporkan Kerusakan</a>
+    <h3 class="mb-0">@Model.KodePc <span class="@Model.Kondisi.Badge()">@Model.Kondisi.Tampil()</span></h3>
+    <a asp-controller="Laporan" asp-action="Create" asp-route-komputerId="@Model.Id" class="btn btn-danger">Laporkan kerusakan</a>
 </div>
 <div class="row g-3">
     <div class="col-md-4">
@@ -30,7 +30,7 @@
                 <div class="border rounded p-3 mb-3">
                     <div class="d-flex justify-content-between">
                         <a asp-controller="Laporan" asp-action="Detail" asp-route-id="@l.Id" class="fw-semibold">#@l.Id · @l.Deskripsi</a>
-                        <span class="badge @l.Status.Badge() align-self-start">@l.Status.Tampil()</span>
+                        <span class="@l.Status.Badge()">@l.Status.Tampil()</span>
                     </div>
                     <div class="small text-muted mb-2">Dilaporkan @l.TanggalLapor.ToString("dd/MM/yyyy HH:mm") oleh @l.Pelapor!.NamaLengkap</div>
                     <div class="timeline">
@@ -38,7 +38,7 @@
                     {
                         <div class="item small">
                             <strong>@p.Tanggal.ToString("dd/MM/yyyy HH:mm")</strong> — @p.Teknisi!.NamaLengkap
-                            <span class="badge @p.StatusSetelah.Badge()">@p.StatusSetelah.Tampil()</span><br />
+                            <span class="@p.StatusSetelah.Badge()">@p.StatusSetelah.Tampil()</span><br />
                             @p.Tindakan
                             @if (!string.IsNullOrEmpty(p.Sparepart)) { <br /><span class="text-muted">Sparepart: @p.Sparepart · Rp @p.Biaya.ToString("N0")</span> }
                         </div>

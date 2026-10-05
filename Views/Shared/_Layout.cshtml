@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Perbaikan Komputer Lab</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+@{
+    var masuk = User.Identity?.IsAuthenticated == true;
+    var peran = masuk ? User.PeranPengguna() : Peran.Pelapor;
+    string Aktif(string c) => ViewContext.RouteData.Values["controller"]?.ToString() == c ? "active" : "";
+}
+    @if (masuk)
+    {
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary-subtle-dark mb-4 no-print">
+            <div class="container">
+                <a class="navbar-brand fw-semibold" asp-controller="Home" asp-action="Index">🛠️ LabRepair</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="nav">
+                    <ul class="navbar-nav me-auto">
+                        <li class="nav-item"><a class="nav-link @Aktif("Home")" asp-controller="Home" asp-action="Index">Dashboard</a></li>
+                        <li class="nav-item"><a class="nav-link @Aktif("Laporan")" asp-controller="Laporan" asp-action="Index">Laporan Kerusakan</a></li>
+                        <li class="nav-item"><a class="nav-link @Aktif("Komputer")" asp-controller="Komputer" asp-action="Index">Komputer</a></li>
+                        @if (peran == Peran.Admin)
+                        {
+                            <li class="nav-item"><a class="nav-link @Aktif("Lab")" asp-controller="Lab" asp-action="Index">Lab</a></li>
+                            <li class="nav-item"><a class="nav-link @Aktif("Pengguna")" asp-controller="Pengguna" asp-action="Index">Pengguna</a></li>
+                        }
+                        @if (peran != Peran.Pelapor)
+                        {
+                            <li class="nav-item"><a class="nav-link @Aktif("Rekap")" asp-controller="Rekap" asp-action="Index">Rekap</a></li>
+                        }
+                    </ul>
+                    <span class="navbar-text me-3 small">@User.NamaPengguna() <span class="badge bg-light text-dark">@peran</span></span>
+                    <form asp-controller="Akun" asp-action="Logout" method="post">
+                        <button class="btn btn-sm btn-outline-light">Keluar</button>
+                    </form>
+                </div>
+            </div>
+        </nav>
+    }
+    <div class="container">
+        <main role="main" class="pb-4">
+            @if (TempData["Pesan"] is string pesan)
+            {
+                <div class="alert alert-success alert-dismissible fade show no-print">@pesan
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+            }
+            @if (TempData["Error"] is string err)
+            {
+                <div class="alert alert-danger alert-dismissible fade show no-print">@err
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+            }
+            @RenderBody()
+        </main>
+    </div>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

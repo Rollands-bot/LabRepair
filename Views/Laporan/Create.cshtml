@@ -1,0 +1,24 @@
+@model LaporanKerusakan
+@{ ViewData["Title"] = "Laporkan Kerusakan"; }
+<h3>Laporkan Kerusakan</h3>
+<div class="card p-4" style="max-width: 700px;">
+    <form asp-action="Create" method="post">
+        <div class="mb-3">
+            <label asp-for="KomputerId" class="form-label"></label>
+            <select asp-for="KomputerId" asp-items="ViewBag.KomputerList" class="form-select"><option value="0">-- pilih komputer --</option></select>
+            <span asp-validation-for="KomputerId" class="text-danger small"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Deskripsi" class="form-label"></label>
+            <textarea asp-for="Deskripsi" class="form-control" rows="4" placeholder="Contoh: PC tidak bisa booting, muncul layar biru saat dinyalakan"></textarea>
+            <span asp-validation-for="Deskripsi" class="text-danger small"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Prioritas" class="form-label"></label>
+            <select asp-for="Prioritas" asp-items="Html.GetEnumSelectList<Prioritas>()" class="form-select"></select>
+        </div>
+        <button class="btn btn-danger">Kirim Laporan</button>
+        <a asp-action="Index" class="btn btn-link">Batal</a>
+    </form>
+</div>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

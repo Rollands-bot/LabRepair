@@ -1,0 +1,29 @@
+@model List<Lab>
+@{ ViewData["Title"] = "Data Lab"; }
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3 class="mb-0">Data Lab</h3>
+    <a asp-action="Create" class="btn btn-primary">+ Tambah Lab</a>
+</div>
+<div class="card">
+    <table class="table mb-0">
+        <thead><tr><th>Kode</th><th>Nama</th><th>Lokasi</th><th>Jumlah PC</th><th>PC Bermasalah</th><th></th></tr></thead>
+        <tbody>
+        @foreach (var l in Model)
+        {
+            <tr>
+                <td>@l.Kode</td>
+                <td>@l.Nama</td>
+                <td>@l.Lokasi</td>
+                <td><a asp-controller="Komputer" asp-action="Index" asp-route-labId="@l.Id">@l.Komputer.Count PC</a></td>
+                <td>@l.Komputer.Count(k => k.Kondisi != KondisiKomputer.Baik)</td>
+                <td class="text-end">
+                    <a asp-action="Edit" asp-route-id="@l.Id" class="btn btn-sm btn-outline-secondary">Ubah</a>
+                    <form asp-action="Hapus" asp-route-id="@l.Id" method="post" class="d-inline" onsubmit="return confirm('Hapus lab @l.Nama?')">
+                        <button class="btn btn-sm btn-outline-danger">Hapus</button>
+                    </form>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>

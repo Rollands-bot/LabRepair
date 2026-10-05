@@ -1,0 +1,14 @@
+@model PenggunaVm
+@{ ViewData["Title"] = "Tambah Pengguna"; }
+<h3>Tambah Pengguna</h3>
+<div class="card p-4" style="max-width: 600px;">
+    <form asp-action="Create" method="post">
+        <div class="mb-3"><label asp-for="Username" class="form-label"></label><input asp-for="Username" class="form-control" /><span asp-validation-for="Username" class="text-danger small"></span></div>
+        <div class="mb-3"><label asp-for="NamaLengkap" class="form-label"></label><input asp-for="NamaLengkap" class="form-control" /><span asp-validation-for="NamaLengkap" class="text-danger small"></span></div>
+        <div class="mb-3"><label asp-for="Password" class="form-label"></label><input asp-for="Password" class="form-control" /><span asp-validation-for="Password" class="text-danger small"></span></div>
+        <div class="mb-3"><label asp-for="Peran" class="form-label"></label><select asp-for="Peran" asp-items="Html.GetEnumSelectList<Peran>()" class="form-select"></select></div>
+        <button class="btn btn-primary">Simpan</button>
+        <a asp-action="Index" class="btn btn-link">Batal</a>
+    </form>
+</div>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

@@ -1,0 +1,17 @@
+body { background: #f4f6f9; }
+.bg-primary-subtle-dark { background: #1e3a5f; }
+.card { border: 0; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+.stat .angka { font-size: 2rem; font-weight: 700; line-height: 1; }
+.stat .label { color: #6c757d; font-size: .85rem; }
+.table > :not(caption) > * > * { vertical-align: middle; }
+.timeline { border-left: 3px solid #dee2e6; padding-left: 1rem; }
+.timeline .item { position: relative; margin-bottom: 1rem; }
+.timeline .item::before { content: ""; position: absolute; left: -1.45rem; top: .35rem; width: .8rem; height: .8rem; border-radius: 50%; background: #1e3a5f; }
+.login-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+.only-print { display: none; }
+@media print {
+  .no-print { display: none !important; }
+  .only-print { display: block; }
+  body { background: #fff; }
+  .card { box-shadow: none; border: 1px solid #ccc; }
+}

@@ -1,0 +1,48 @@
+@model List<Komputer>
+@{
+    ViewData["Title"] = "Data Komputer";
+    var admin = User.PeranPengguna() == Peran.Admin;
+}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3 class="mb-0">Data Komputer</h3>
+    @if (admin) { <a asp-action="Create" asp-route-labId="@ViewBag.LabId" class="btn btn-primary">+ Tambah Komputer</a> }
+</div>
+<form method="get" class="row g-2 mb-3">
+    <div class="col-auto">
+        <select name="labId" asp-items="ViewBag.LabList" class="form-select"><option value="">Semua lab</option></select>
+    </div>
+    <div class="col-auto">
+        <select name="kondisi" class="form-select" asp-items="Html.GetEnumSelectList<KondisiKomputer>()">
+            <option value="">Semua kondisi</option>
+        </select>
+    </div>
+    <div class="col-auto"><button class="btn btn-outline-primary">Filter</button></div>
+</form>
+<div class="card">
+    <table class="table mb-0">
+        <thead><tr><th>Kode PC</th><th>Lab</th><th>Spesifikasi</th><th>Kondisi</th><th></th></tr></thead>
+        <tbody>
+        @foreach (var k in Model)
+        {
+            <tr>
+                <td class="fw-semibold">@k.KodePc</td>
+                <td>@k.Lab!.Nama</td>
+                <td class="small text-muted">@k.Processor · @k.Ram · @k.Penyimpanan · @k.Os</td>
+                <td><span class="badge @k.Kondisi.Badge()">@k.Kondisi.Tampil()</span></td>
+                <td class="text-end text-nowrap">
+                    <a asp-action="Riwayat" asp-route-id="@k.Id" class="btn btn-sm btn-outline-primary">Riwayat</a>
+                    <a asp-controller="Laporan" asp-action="Create" asp-route-komputerId="@k.Id" class="btn btn-sm btn-outline-danger">Lapor</a>
+                    @if (admin)
+                    {
+                        <a asp-action="Edit" asp-route-id="@k.Id" class="btn btn-sm btn-outline-secondary">Ubah</a>
+                        <form asp-action="Hapus" asp-route-id="@k.Id" method="post" class="d-inline" onsubmit="return confirm('Hapus @k.KodePc?')">
+                            <button class="btn btn-sm btn-outline-secondary">Hapus</button>
+                        </form>
+                    }
+                </td>
+            </tr>
+        }
+        @if (!Model.Any()) { <tr><td colspan="5" class="text-center text-muted">Tidak ada data.</td></tr> }
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,22 @@
+@model Komputer
+@{ ViewData["Title"] = Model.Id == 0 ? "Tambah Komputer" : "Ubah Komputer"; }
+<h3>@ViewData["Title"]</h3>
+<div class="card p-4" style="max-width: 700px;">
+    <form asp-action="Simpan" method="post">
+        <input type="hidden" asp-for="Id" />
+        <div class="row g-3">
+            <div class="col-md-6"><label asp-for="KodePc" class="form-label"></label><input asp-for="KodePc" class="form-control" placeholder="LAB-1-PC09" /><span asp-validation-for="KodePc" class="text-danger small"></span></div>
+            <div class="col-md-6"><label asp-for="LabId" class="form-label"></label><select asp-for="LabId" asp-items="ViewBag.LabList" class="form-select"><option value="">-- pilih lab --</option></select><span asp-validation-for="LabId" class="text-danger small"></span></div>
+            <div class="col-md-6"><label asp-for="Processor" class="form-label"></label><input asp-for="Processor" class="form-control" /></div>
+            <div class="col-md-6"><label asp-for="Ram" class="form-label"></label><input asp-for="Ram" class="form-control" /></div>
+            <div class="col-md-6"><label asp-for="Penyimpanan" class="form-label"></label><input asp-for="Penyimpanan" class="form-control" /></div>
+            <div class="col-md-6"><label asp-for="Os" class="form-label"></label><input asp-for="Os" class="form-control" /></div>
+            <div class="col-md-6"><label asp-for="Kondisi" class="form-label"></label><select asp-for="Kondisi" asp-items="Html.GetEnumSelectList<KondisiKomputer>()" class="form-select"></select></div>
+        </div>
+        <div class="mt-4">
+            <button class="btn btn-primary">Simpan</button>
+            <a asp-action="Index" class="btn btn-link">Batal</a>
+        </div>
+    </form>
+</div>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

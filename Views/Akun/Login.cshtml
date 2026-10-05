@@ -1,0 +1,23 @@
+@model LoginVm
+@{ ViewData["Title"] = "Masuk"; }
+<div class="login-wrap">
+    <div class="card p-4" style="width: 100%; max-width: 380px;">
+        <h4 class="mb-1">🛠️ LabRepair</h4>
+        <p class="text-muted small mb-4">Sistem Informasi Perbaikan Komputer Laboratorium</p>
+        <form asp-action="Login" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger small mb-2"></div>
+            <input type="hidden" asp-for="ReturnUrl" />
+            <div class="mb-3">
+                <label asp-for="Username" class="form-label"></label>
+                <input asp-for="Username" class="form-control" autofocus />
+                <span asp-validation-for="Username" class="text-danger small"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Password" class="form-label"></label>
+                <input asp-for="Password" class="form-control" />
+                <span asp-validation-for="Password" class="text-danger small"></span>
+            </div>
+            <button class="btn btn-primary w-100">Masuk</button>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,51 @@
+@model Komputer
+@{
+    ViewData["Title"] = $"Riwayat {Model.KodePc}";
+    var laporan = Model.Laporan.OrderByDescending(l => l.TanggalLapor).ToList();
+}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3 class="mb-0">@Model.KodePc <span class="badge @Model.Kondisi.Badge() fs-6 align-middle">@Model.Kondisi.Tampil()</span></h3>
+    <a asp-controller="Laporan" asp-action="Create" asp-route-komputerId="@Model.Id" class="btn btn-danger">+ Laporkan Kerusakan</a>
+</div>
+<div class="row g-3">
+    <div class="col-md-4">
+        <div class="card p-3">
+            <dl class="mb-0">
+                <dt>Lab</dt><dd>@Model.Lab!.Nama <span class="text-muted small">(@Model.Lab.Lokasi)</span></dd>
+                <dt>Processor</dt><dd>@Model.Processor</dd>
+                <dt>RAM</dt><dd>@Model.Ram</dd>
+                <dt>Penyimpanan</dt><dd>@Model.Penyimpanan</dd>
+                <dt>Sistem Operasi</dt><dd>@Model.Os</dd>
+                <dt>Total laporan</dt><dd>@laporan.Count kali</dd>
+                <dt>Total biaya perbaikan</dt><dd>Rp @laporan.SelectMany(l => l.Perbaikan).Sum(p => p.Biaya).ToString("N0")</dd>
+            </dl>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <div class="card p-3">
+            <h5>Riwayat Perbaikan</h5>
+            @if (!laporan.Any()) { <p class="text-muted mb-0">Komputer ini belum pernah dilaporkan rusak.</p> }
+            @foreach (var l in laporan)
+            {
+                <div class="border rounded p-3 mb-3">
+                    <div class="d-flex justify-content-between">
+                        <a asp-controller="Laporan" asp-action="Detail" asp-route-id="@l.Id" class="fw-semibold">#@l.Id · @l.Deskripsi</a>
+                        <span class="badge @l.Status.Badge() align-self-start">@l.Status.Tampil()</span>
+                    </div>
+                    <div class="small text-muted mb-2">Dilaporkan @l.TanggalLapor.ToString("dd/MM/yyyy HH:mm") oleh @l.Pelapor!.NamaLengkap</div>
+                    <div class="timeline">
+                    @foreach (var p in l.Perbaikan.OrderBy(p => p.Tanggal))
+                    {
+                        <div class="item small">
+                            <strong>@p.Tanggal.ToString("dd/MM/yyyy HH:mm")</strong> — @p.Teknisi!.NamaLengkap
+                            <span class="badge @p.StatusSetelah.Badge()">@p.StatusSetelah.Tampil()</span><br />
+                            @p.Tindakan
+                            @if (!string.IsNullOrEmpty(p.Sparepart)) { <br /><span class="text-muted">Sparepart: @p.Sparepart · Rp @p.Biaya.ToString("N0")</span> }
+                        </div>
+                    }
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

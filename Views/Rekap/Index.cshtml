@@ -1,0 +1,60 @@
+@model RekapVm
+@{
+    ViewData["Title"] = "Rekap Laporan";
+    var namaBulan = new System.Globalization.CultureInfo("id-ID").DateTimeFormat;
+}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3 class="mb-0">Rekap Perbaikan — @namaBulan.GetMonthName(Model.Bulan) @Model.Tahun</h3>
+    <button onclick="window.print()" class="btn btn-outline-primary no-print">🖨️ Cetak</button>
+</div>
+<form method="get" class="row g-2 mb-3 no-print">
+    <div class="col-auto">
+        <select name="bulan" class="form-select">
+            @for (var b = 1; b <= 12; b++) { <option value="@b" selected="@(b == Model.Bulan)">@namaBulan.GetMonthName(b)</option> }
+        </select>
+    </div>
+    <div class="col-auto"><input name="tahun" type="number" value="@Model.Tahun" class="form-control" style="width: 110px" /></div>
+    <div class="col-auto"><select name="labId" asp-items="ViewBag.LabList" class="form-select"><option value="">Semua lab</option></select></div>
+    <div class="col-auto"><button class="btn btn-outline-primary">Tampilkan</button></div>
+</form>
+
+<div class="card mb-3">
+    <div class="card-header bg-white fw-semibold">Ringkasan per lab</div>
+    <table class="table mb-0">
+        <thead><tr><th>Lab</th><th class="text-end">Total</th><th class="text-end">Dilaporkan</th><th class="text-end">Diproses</th><th class="text-end">Selesai</th><th class="text-end">Tidak Bisa</th><th class="text-end">Biaya</th></tr></thead>
+        <tbody>
+        @foreach (var r in Model.PerLab)
+        {
+            <tr><td>@r.Lab</td><td class="text-end">@r.Total</td><td class="text-end">@r.Dilaporkan</td><td class="text-end">@r.Diproses</td><td class="text-end">@r.Selesai</td><td class="text-end">@r.TidakBisa</td><td class="text-end">Rp @r.Biaya.ToString("N0")</td></tr>
+        }
+        @if (Model.PerLab.Any())
+        {
+            <tr class="fw-semibold table-light">
+                <td>Total</td><td class="text-end">@Model.PerLab.Sum(r => r.Total)</td><td class="text-end">@Model.PerLab.Sum(r => r.Dilaporkan)</td><td class="text-end">@Model.PerLab.Sum(r => r.Diproses)</td><td class="text-end">@Model.PerLab.Sum(r => r.Selesai)</td><td class="text-end">@Model.PerLab.Sum(r => r.TidakBisa)</td><td class="text-end">Rp @Model.PerLab.Sum(r => r.Biaya).ToString("N0")</td>
+            </tr>
+        }
+        else { <tr><td colspan="7" class="text-center text-muted">Tidak ada laporan pada periode ini.</td></tr> }
+        </tbody>
+    </table>
+</div>
+
+<div class="card">
+    <div class="card-header bg-white fw-semibold">Detail laporan</div>
+    <table class="table table-sm mb-0">
+        <thead><tr><th>#</th><th>Tgl Lapor</th><th>Komputer</th><th>Kerusakan</th><th>Teknisi</th><th>Status</th><th>Tgl Selesai</th><th class="text-end">Biaya</th></tr></thead>
+        <tbody>
+        @foreach (var l in Model.Detail)
+        {
+            <tr>
+                <td>@l.Id</td><td>@l.TanggalLapor.ToString("dd/MM/yyyy")</td><td>@l.Komputer!.KodePc</td><td>@l.Deskripsi</td>
+                <td>@(l.Teknisi?.NamaLengkap ?? "-")</td><td>@l.Status.Tampil()</td>
+                <td>@(l.TanggalSelesai?.ToString("dd/MM/yyyy") ?? "-")</td>
+                <td class="text-end">Rp @l.Perbaikan.Sum(p => p.Biaya).ToString("N0")</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>
+<div class="only-print mt-5" style="margin-left: 65%;">
+    Tangerang, @DateTime.Now.ToString("dd MMMM yyyy", new System.Globalization.CultureInfo("id-ID"))<br />Kepala Laboratorium<br /><br /><br /><br />(______________________)
+</div>

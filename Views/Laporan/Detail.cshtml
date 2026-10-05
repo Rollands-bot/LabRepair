@@ -1,0 +1,75 @@
+@model LaporanKerusakan
+@{
+    ViewData["Title"] = $"Laporan #{Model.Id}";
+    var pilihan = (IReadOnlyList<StatusLaporan>)ViewBag.StatusPilihan;
+    var bisaProses = User.PeranPengguna() != Peran.Pelapor && pilihan.Count > 0;
+}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3 class="mb-0">Laporan #@Model.Id <span class="badge @Model.Status.Badge() fs-6 align-middle">@Model.Status.Tampil()</span></h3>
+    <a asp-action="Index" class="btn btn-link">&larr; Kembali</a>
+</div>
+<div class="row g-3">
+    <div class="col-md-5">
+        <div class="card p-3 mb-3">
+            <dl class="mb-0">
+                <dt>Komputer</dt>
+                <dd><a asp-controller="Komputer" asp-action="Riwayat" asp-route-id="@Model.KomputerId">@Model.Komputer!.KodePc</a> — @Model.Komputer!.Lab!.Nama</dd>
+                <dt>Kerusakan</dt><dd>@Model.Deskripsi</dd>
+                <dt>Prioritas</dt><dd><span class="badge @Model.Prioritas.Badge()">@Model.Prioritas</span></dd>
+                <dt>Pelapor</dt><dd>@Model.Pelapor!.NamaLengkap · @Model.TanggalLapor.ToString("dd/MM/yyyy HH:mm")</dd>
+                <dt>Teknisi</dt><dd>@(Model.Teknisi?.NamaLengkap ?? "Belum ditangani")</dd>
+                @if (Model.TanggalSelesai.HasValue)
+                {
+                    <dt>Tanggal selesai</dt><dd>@Model.TanggalSelesai.Value.ToString("dd/MM/yyyy HH:mm")</dd>
+                }
+            </dl>
+        </div>
+        @if (bisaProses)
+        {
+            <div class="card p-3">
+                <h5>Catat Perbaikan</h5>
+                <form asp-action="Proses" method="post">
+                    <input type="hidden" name="LaporanId" value="@Model.Id" />
+                    <div class="mb-2">
+                        <label class="form-label">Tindakan</label>
+                        <textarea name="Tindakan" class="form-control" rows="3" required></textarea>
+                    </div>
+                    <div class="row g-2 mb-2">
+                        <div class="col-7"><label class="form-label">Sparepart diganti</label><input name="Sparepart" class="form-control" /></div>
+                        <div class="col-5"><label class="form-label">Biaya (Rp)</label><input name="Biaya" type="number" min="0" value="0" class="form-control" /></div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Ubah status menjadi</label>
+                        <select name="StatusBaru" class="form-select">
+                            @foreach (var s in pilihan)
+                            {
+                                <option value="@s">@s.Tampil()</option>
+                            }
+                        </select>
+                    </div>
+                    <button class="btn btn-primary">Simpan</button>
+                </form>
+            </div>
+        }
+    </div>
+    <div class="col-md-7">
+        <div class="card p-3">
+            <h5>Riwayat Penanganan</h5>
+            @if (!Model.Perbaikan.Any()) { <p class="text-muted mb-0">Belum ada tindakan perbaikan.</p> }
+            <div class="timeline">
+            @foreach (var p in Model.Perbaikan.OrderBy(p => p.Tanggal))
+            {
+                <div class="item">
+                    <div class="small text-muted">@p.Tanggal.ToString("dd/MM/yyyy HH:mm") · @p.Teknisi!.NamaLengkap
+                        <span class="badge @p.StatusSetelah.Badge()">@p.StatusSetelah.Tampil()</span></div>
+                    <div>@p.Tindakan</div>
+                    @if (!string.IsNullOrEmpty(p.Sparepart) || p.Biaya > 0)
+                    {
+                        <div class="small text-muted">Sparepart: @(p.Sparepart ?? "-") · Biaya: Rp @p.Biaya.ToString("N0")</div>
+                    }
+                </div>
+            }
+            </div>
+        </div>
+    </div>
+</div>

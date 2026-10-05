@@ -1,0 +1,48 @@
+@model DashboardVm
+@{ ViewData["Title"] = "Dashboard"; }
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3 class="mb-0">Dashboard</h3>
+    <a asp-controller="Laporan" asp-action="Create" class="btn btn-danger">+ Laporkan Kerusakan</a>
+</div>
+<div class="row g-3 mb-4">
+    <div class="col-6 col-md-3"><div class="card stat p-3"><div class="angka">@Model.TotalKomputer</div><div class="label">Total komputer</div></div></div>
+    <div class="col-6 col-md-3"><div class="card stat p-3"><div class="angka text-danger">@Model.KomputerRusak</div><div class="label">Rusak / dalam perbaikan</div></div></div>
+    <div class="col-6 col-md-3"><div class="card stat p-3"><div class="angka text-warning">@Model.LaporanTerbuka</div><div class="label">Laporan belum selesai</div></div></div>
+    <div class="col-6 col-md-3"><div class="card stat p-3"><div class="angka text-success">@Model.SelesaiBulanIni</div><div class="label">Selesai bulan ini</div></div></div>
+</div>
+<div class="row g-3">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header bg-white fw-semibold">Laporan terbaru</div>
+            <table class="table mb-0">
+                <thead><tr><th>Tanggal</th><th>Komputer</th><th>Kerusakan</th><th>Status</th></tr></thead>
+                <tbody>
+                @foreach (var l in Model.LaporanTerbaru)
+                {
+                    <tr>
+                        <td class="small">@l.TanggalLapor.ToString("dd/MM/yyyy")</td>
+                        <td>@l.Komputer!.KodePc<div class="small text-muted">@l.Komputer.Lab!.Nama</div></td>
+                        <td><a asp-controller="Laporan" asp-action="Detail" asp-route-id="@l.Id">@l.Deskripsi</a></td>
+                        <td><span class="badge @l.Status.Badge()">@l.Status.Tampil()</span></td>
+                    </tr>
+                }
+                @if (!Model.LaporanTerbaru.Any()) { <tr><td colspan="4" class="text-muted text-center">Belum ada laporan.</td></tr> }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header bg-white fw-semibold">Paling sering rusak</div>
+            <ul class="list-group list-group-flush">
+            @foreach (var (pc, jumlah) in Model.SeringRusak)
+            {
+                <li class="list-group-item d-flex justify-content-between">
+                    <a asp-controller="Komputer" asp-action="Riwayat" asp-route-id="@pc.Id">@pc.KodePc</a>
+                    <span class="badge bg-secondary">@jumlah laporan</span>
+                </li>
+            }
+            </ul>
+        </div>
+    </div>
+</div>
